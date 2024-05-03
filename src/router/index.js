@@ -67,7 +67,4 @@ router.delete('/usuarios/:id', async (ctx) => {
     }
 });
 
-
-
-
 export default router
