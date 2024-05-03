@@ -3,12 +3,24 @@ import bodyParser from 'koa-body'
 
 import router from './router/index'
 
-const app = new Koa()
+const Koa = require("koa");
+const BodyParser = require("koa-bodyparser");
+const Logger = require("koa-logger");
+const cors = require('koa-cors');
+const serve = require("koa-static");
+const mount = require("koa-mount");
+const HttpStatus = require("http-status");
+
+const static_pages = new Koa();
+static_pages.use(serve(__dirname + "/frontend/build")); //serve the build directory
+app.use(mount("/", static_pages));
+
 const pool = require('./database');
 const port = 3000
 
-app.use(bodyParser({ multipart: true, urlencoded: true }))
-
+app.use(BodyParser({ multipart: true, urlencoded: true }))
+app.use(Logger());
+app.use(cors());
 app.use(router.routes())
 
 app.use(async (ctx, next) => {
