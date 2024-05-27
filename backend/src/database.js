@@ -6,7 +6,7 @@ const pool = new Pool({
     host: 'localhost',
     database: 'Usuarios',
     password: '1478', 
-    port: 5432, // El puerto predeterminado de PostgreSQL es 5432
+    port: 5432, 
 });
 
 // Exportar el pool de conexiones
