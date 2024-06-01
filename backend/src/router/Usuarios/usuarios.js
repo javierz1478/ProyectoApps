@@ -51,6 +51,16 @@ async function eliminarUsuario(id) {
     }
 }
 
+async function verificarUsuario(email, contraseña) {
+    try {
+      const result = await pool.query('SELECT * FROM usuarios WHERE email = $1 AND contraseña = $2', [email, contraseña]);
+      return result.rows;
+    } catch (error) {
+      console.error("Error al verificar usuario:", error);
+      throw new Error('Error interno del servidor');
+    }
+  }
 
-module.exports = { obtenerUsuarios, actualizarUsuario, obtenerUsuarioPorId, añadirUsuario, eliminarUsuario };
+
+module.exports = { obtenerUsuarios, actualizarUsuario, obtenerUsuarioPorId, añadirUsuario, eliminarUsuario , verificarUsuario};
 

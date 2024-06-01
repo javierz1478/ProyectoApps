@@ -1,6 +1,6 @@
 import Router from 'koa-router'
 import getHealth from './health/health'
-import { actualizarUsuario, añadirUsuario, eliminarUsuario, obtenerUsuarioPorId, obtenerUsuarios } from './Usuarios/usuarios';
+import { actualizarUsuario, añadirUsuario, eliminarUsuario, obtenerUsuarioPorId, obtenerUsuario, verificarUsuario } from './Usuarios/usuarios';
 
 
 const router = new Router()
@@ -67,5 +67,23 @@ router.delete('/usuarios/:id', async (ctx) => {
         ctx.body = { error: 'Error interno del servidor' };
     }
 });
+
+router.post('/verificarUsuario', async (ctx) => {
+    const { email, contraseña } = ctx.request.body;
+    try {
+      const usuario = await verificarUsuario(email, contraseña);
+      if (usuario.length > 0) {
+        ctx.status = 200;
+        ctx.body = usuario;
+      } else {
+        ctx.status = 404;
+        ctx.body = { message: 'Usuario no encontrado' };
+      }
+    } catch (error) {
+      console.error("Error en el endpoint verificarUsuario:", error); // Asegúrate de registrar el error aquí también
+      ctx.status = 500;
+      ctx.body = { message: 'Error interno del servidor' };
+    }
+  });
 
 export default router
