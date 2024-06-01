@@ -1,0 +1,51 @@
+.reservas-background {
+    background-image: url('fondo_inicio.webp');
+    background-size: cover;
+    background-position: center;
+    min-height: 100vh;
+  }
+
+  .navbar {
+    background-color: rgba(84, 238, 84, 0.7) !important;
+  }
+
+  
+
+  
+  .navbar-brand-custom {
+    font-size: 1.5rem;
+    font-family: 'Arial', sans-serif;
+    font-weight: bold;
+  }
+  
+  .reservas-table {
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  
+  .reservas-table th,
+  .reservas-table td {
+    text-align: center;
+    vertical-align: middle;
+  }
+  
+  .reservas-table th {
+    background-color: #007bff;
+    color: white;
+  }
+  
+  .reservas-table td {
+    background-color: #f8f9fa;
+  }
+  
+  .text-center {
+    text-align: center;
+  }
+  
+  .btn-primary {
+  background-color: #007bff;
+  border-color: #007bff;
+  font-size: 1.25rem;
+  padding: 0.5rem 2rem;
+}

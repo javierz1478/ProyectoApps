@@ -1,0 +1,42 @@
+  .background-section {
+    background-image: url('fondo_inicio.webp');
+    background-size: cover;
+    background-position: center;
+    height: 110vh;
+}
+  
+  .navbar-brand-custom {
+    font-size: 2rem;
+    font-family: 'Arial', sans-serif;
+  }
+  
+  .confirmation-box {
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 15px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 500px;
+  }
+  
+  .confirmation-box h1 {
+    color: #333;
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .confirmation-box ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .confirmation-box ul li {
+    font-size: 1.25rem;
+    margin-bottom: 0.75rem;
+    color: #333;
+  }
+  
+  .confirmation-box .btn {
+    font-size: 1.25rem;
+    padding: 0.5rem 2rem;
+  }
+  
