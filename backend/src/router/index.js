@@ -5,7 +5,8 @@ import {
     getUsuarioById,
     getAllUsuarios,
     updateUsuario,
-    deleteUsuario } from './Usuarios/usuarios';
+    deleteUsuario,
+    verificarContraseña} from './Usuarios/usuarios';
 
 
 const router = new Router()
@@ -83,6 +84,24 @@ router.delete('/usuarios/:id', async (ctx) => {
         }
     } catch (error) {
         console.error("Error al eliminar usuario:", error);
+        ctx.status = 500;
+        ctx.body = { error: 'Error interno del servidor' };
+    }
+});
+
+router.post('/verificarUsuario', async (ctx) => {
+    const { email, contraseña } = ctx.request.body;
+    try {
+        const isValid = await verificarContraseña(email, contraseña);
+        if (isValid) {
+            ctx.status = 200;
+            ctx.body = { message: 'Inicio de sesión exitoso' };
+        } else {
+            ctx.status = 401;
+            ctx.body = { error: 'Credenciales incorrectas' };
+        }
+    } catch (error) {
+        console.error('Error al iniciar sesión:', error);
         ctx.status = 500;
         ctx.body = { error: 'Error interno del servidor' };
     }

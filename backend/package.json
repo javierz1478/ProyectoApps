@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "@sequelize/postgres": "^7.0.0-alpha.41",
+    "bcrypt": "^5.1.1",
     "create-react-app": "^5.0.1",
     "dotenv": "^16.4.5",
     "http-status": "^1.7.4",

@@ -1,5 +1,6 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../../database'); // Asegúrate de importar la instancia de Sequelize
+const { hashPassword, validatePassword } = require('./password');
 
 const Usuario = sequelize.define('Usuario', {
     id: {
@@ -43,6 +44,7 @@ Usuario.sync({ force: false })
 
 async function createUsuario(data) {
     try {
+        data.contraseña = await hashPassword(data.contraseña)
         const usuario = await Usuario.create(data);
         console.log('Usuario creado:', usuario);
         return usuario;
@@ -108,6 +110,28 @@ async function deleteUsuario(id) {
     }
 }
 
+async function verificarContraseña(email, password) {
+    try {
+        const usuario = await Usuario.findOne({ where: { email } });
+        if (usuario) {
+            const isMatch = await validatePassword(password, usuario.contraseña);
+            if (isMatch) {
+                console.log('Contraseña válida');
+                return true;
+            } else {
+                console.log('Contraseña incorrecta');
+                return false;
+            }
+        } else {
+            console.log('Usuario no encontrado');
+            return false;
+        }
+    } catch (error) {
+        console.error('Error al verificar la contraseña:', error);
+        throw error;
+    }
+}
+
 // Exporta las funciones CRUD
 module.exports = {
     Usuario,
@@ -115,6 +139,7 @@ module.exports = {
     getUsuarioById,
     getAllUsuarios,
     updateUsuario,
-    deleteUsuario
+    deleteUsuario,
+    verificarContraseña
 };
 
