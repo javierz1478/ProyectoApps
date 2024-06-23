@@ -1,13 +1,17 @@
-const { Pool } = require('pg');
+const { Sequelize } = require('sequelize');
 
-// Configuración de conexión a la base de datos PostgreSQL
-const pool = new Pool({
-    user: 'postgres',
-    host: 'localhost',
-    database: 'Usuarios',
-    password: 'jambito', 
-    port: 5432, 
+const sequelize = new Sequelize('proyecto', 'postgres', '1234', {
+  host: 'localhost',
+  dialect: 'postgres',
+  port: 5432,
 });
 
-// Exportar el pool de conexiones
-module.exports = pool;
+sequelize.authenticate()
+  .then(() => {
+    console.log('Conexión establecida correctamente con la base de datos');
+  })
+  .catch(err => {
+    console.error('Error al conectar con la base de datos:', err);
+  });
+
+module.exports = sequelize;
