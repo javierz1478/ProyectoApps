@@ -22,8 +22,10 @@
     "rimraf": "^5.0.5"
   },
   "dependencies": {
+    "bcrypt": "^5.1.1",
     "create-react-app": "^5.0.1",
     "http-status": "^1.7.4",
+    "jsonwebtoken": "^9.0.2",
     "koa-body": "^6.0.1",
     "koa-bodyparser": "^4.4.1",
     "koa-cors": "^0.0.16",
@@ -34,6 +36,7 @@
     "npm": "^10.8.1",
     "pg": "^8.11.5",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "sequelize": "^6.37.3"
   }
 }

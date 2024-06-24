@@ -1,16 +1,24 @@
 import Router from 'koa-router'
 import getHealth from './health/health'
-import {actualizarDisponibilidadCancha,obtenerDisponibilidadCanchas , actualizarUsuario, añadirUsuario, eliminarUsuario, obtenerUsuarioPorId, obtenerUsuario, verificarUsuario } from './Usuarios/usuarios';
+import {
+    createUsuario,
+    getUsuarioById,
+    getAllUsuarios,
+    updateUsuario,
+    deleteUsuario,
+    verificarContraseña} from './Usuarios/usuarios';
+import { obtenerDisponibilidadCanchas,actualizarDisponibilidadCancha } from './canchas/cancha';
 
 
-const router = new Router()
-//const pool = require('../database');
+const jwt = require('jsonwebtoken');
+const router = new Router();
+const secretKey = 'secret'
 
 router.get('/health', getHealth)
 
 router.get('/usuarios', async (ctx) => {
     try {
-        const usuarios = await obtenerUsuarios();
+        const usuarios = await getAllUsuarios();
         ctx.body = usuarios;
     } catch (error) {
         console.error("Error al obtener usuarios:", error);
@@ -22,8 +30,9 @@ router.get('/usuarios', async (ctx) => {
 router.post('/usuarios', async (ctx) => {
     const { nombre, apellido, email, contraseña } = ctx.request.body;
     try {
-        const result = await añadirUsuario(nombre,apellido,email,contraseña);
-        ctx.body = result[0];
+        const usuario = await createUsuario({ nombre, apellido, email, contraseña });
+        ctx.status = 201; // Código de estado para creación exitosa
+        ctx.body = usuario;
     } catch (error) {
         console.error("Error al crear usuario:", error);
         ctx.status = 500;
@@ -34,8 +43,13 @@ router.post('/usuarios', async (ctx) => {
 router.get('/usuarios/:id', async (ctx) => {
     const id = parseInt(ctx.params.id);
     try {
-        const result = await obtenerUsuarioPorId(id);
-        ctx.body = result[0];
+        const usuario = await getUsuarioById(id);
+        if (usuario) {
+            ctx.body = usuario;
+        } else {
+            ctx.status = 404; // No encontrado
+            ctx.body = { error: 'Usuario no encontrado' };
+        }
     } catch (error) {
         console.error("Error al obtener usuario:", error);
         ctx.status = 500;
@@ -47,8 +61,14 @@ router.put('/usuarios/:id', async (ctx) => {
     const id = parseInt(ctx.params.id);
     const { nombre, apellido, email, contraseña } = ctx.request.body;
     try {
-        const result = await actualizarUsuario(id, nombre, apellido, contraseña, email);
-        ctx.body = result[0];
+        const usuario = await updateUsuario(id, { nombre, apellido, email, contraseña });
+        if (usuario) {
+            ctx.body = usuario;
+            ctx.status = 200;
+        } else {
+            ctx.status = 404; // No encontrado
+            ctx.body = { error: 'Usuario no encontrado' };
+        }
     } catch (error) {
         console.error("Error al actualizar usuario:", error);
         ctx.status = 500;
@@ -59,8 +79,13 @@ router.put('/usuarios/:id', async (ctx) => {
 router.delete('/usuarios/:id', async (ctx) => {
     const id = parseInt(ctx.params.id);
     try {
-        eliminarUsuario(id)
-        ctx.status = 204; 
+        const usuarioEliminado = await deleteUsuario(id);
+        if (usuarioEliminado) {
+            ctx.status = 204; // Sin contenido, eliminación exitosa
+        } else {
+            ctx.status = 404; // No encontrado
+            ctx.body = { error: 'Usuario no encontrado' };
+        }
     } catch (error) {
         console.error("Error al eliminar usuario:", error);
         ctx.status = 500;
@@ -71,21 +96,55 @@ router.delete('/usuarios/:id', async (ctx) => {
 router.post('/verificarUsuario', async (ctx) => {
     const { email, contraseña } = ctx.request.body;
     try {
-      const usuario = await verificarUsuario(email, contraseña);
-      if (usuario.length > 0) {
+      const user = await verificarContraseña(email, contraseña);
+      if (user) {
+        // Generar token JWT
+        //const token = jwt.sign({ userId: user.id }, secretKey);
+  
+        // Establecer cookie con el token
+        //ctx.cookies.set('token', token, { httpOnly: true });
+  
         ctx.status = 200;
-        ctx.body = usuario;
+        ctx.body = { message: 'Inicio de sesión exitoso' };
       } else {
-        ctx.status = 404;
-        ctx.body = { message: 'Usuario no encontrado' };
+        ctx.status = 401;
+        ctx.body = { error: 'Credenciales incorrectas' };
       }
     } catch (error) {
-      console.error("Error en el endpoint verificarUsuario:", error); // Asegúrate de registrar el error aquí también
+      console.error('Error al iniciar sesión:', error);
       ctx.status = 500;
-      ctx.body = { message: 'Error interno del servidor' };
+      ctx.body = { error: 'Error interno del servidor' };
     }
   });
 
+  router.get('/profile', async (ctx) => {
+    const token = ctx.cookies.get('token');
+    if (!token) {
+      ctx.status = 401;
+      ctx.body = { error: 'No autorizado' };
+      return;
+    }
+  
+    try {
+      const decoded = await jwt.verify(token, secretKey);
+      const userId = decoded.userId;
+  
+      const result = await getUsuarioById(userId);
+      const user = result;
+  
+      if (!user) {
+        ctx.status = 404;
+        ctx.body = { error: 'Usuario no encontrado' };
+        return;
+      }
+      ctx.status = 200;
+      ctx.body = {message: 'Usuario: ' ,user};
+    } catch (error) {
+      console.error('Error al obtener perfil:', error);
+      ctx.status = 500;
+      ctx.body = { error: 'Error interno del servidor' };
+    }
+  });
 
 
 //ENDPOINTS PARA CANCHAS
@@ -101,7 +160,6 @@ router.get('/disponibilidad_canchas', async (ctx) => {
     }
   });
 
-
   router.post('/disponibilidad_canchas', async (ctx) => {
     try {
         const { dia, bloque } = ctx.request.body;
@@ -113,6 +171,5 @@ router.get('/disponibilidad_canchas', async (ctx) => {
         ctx.body = { error: 'Error interno del servidor' };
     }
 });
-  
   
 export default router
