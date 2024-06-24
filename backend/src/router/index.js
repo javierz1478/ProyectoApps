@@ -1,6 +1,6 @@
 import Router from 'koa-router'
 import getHealth from './health/health'
-import { actualizarUsuario, añadirUsuario, eliminarUsuario, obtenerUsuarioPorId, obtenerUsuario, verificarUsuario } from './Usuarios/usuarios';
+import {actualizarDisponibilidadCancha,obtenerDisponibilidadCanchas , actualizarUsuario, añadirUsuario, eliminarUsuario, obtenerUsuarioPorId, obtenerUsuario, verificarUsuario } from './Usuarios/usuarios';
 
 
 const router = new Router()
@@ -86,4 +86,33 @@ router.post('/verificarUsuario', async (ctx) => {
     }
   });
 
+
+
+//ENDPOINTS PARA CANCHAS
+
+router.get('/disponibilidad_canchas', async (ctx) => {
+    try {
+      const disponibilidad = await obtenerDisponibilidadCanchas();
+      ctx.body = disponibilidad;
+    } catch (error) {
+      console.error("Error al obtener disponibilidad de canchas:", error);
+      ctx.status = 500;
+      ctx.body = { error: 'Error interno del servidor' };
+    }
+  });
+
+
+  router.post('/disponibilidad_canchas', async (ctx) => {
+    try {
+        const { dia, bloque } = ctx.request.body;
+        const resultado = await actualizarDisponibilidadCancha(dia, bloque);
+        ctx.body = resultado;
+    } catch (error) {
+        console.error("Error al confirmar reserva:", error);
+        ctx.status = 500;
+        ctx.body = { error: 'Error interno del servidor' };
+    }
+});
+  
+  
 export default router
