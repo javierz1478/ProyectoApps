@@ -11,19 +11,6 @@ async function hashPassword(password) {
         throw error;
     }
 }
-
-// Función para comparar una contraseña con su hash
-async function validatePassword(password, hashedPassword) {
-    try {
-        const isMatch = await bcrypt.compare(password, hashedPassword);
-        return isMatch;
-    } catch (error) {
-        console.error('Error al validar la contraseña:', error);
-        throw error;
-    }
-}
-
 module.exports = {
-    hashPassword,
-    validatePassword
+    hashPassword
 };

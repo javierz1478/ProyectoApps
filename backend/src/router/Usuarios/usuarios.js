@@ -1,6 +1,7 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../../database'); // Asegúrate de importar la instancia de Sequelize
-const { hashPassword, validatePassword } = require('./password');
+const { hashPassword } = require('./password');
+const bcrypt = require('bcrypt');
 
 const Usuario = sequelize.define('Usuario', {
     id: {
@@ -110,27 +111,21 @@ async function deleteUsuario(id) {
     }
 }
 
-async function verificarContraseña(email, password) {
+const verificarContraseña = async (email, contraseña) => {
     try {
-        const usuario = await Usuario.findOne({ where: { email } });
-        if (usuario) {
-            const isMatch = await validatePassword(password, usuario.contraseña);
-            if (isMatch) {
-                console.log('Contraseña válida');
-                return true;
-            } else {
-                console.log('Contraseña incorrecta');
-                return false;
-            }
-        } else {
-            console.log('Usuario no encontrado');
-            return false;
-        }
+      const user = await Usuario.findOne({ where: { email } });
+  
+      if (!user) {
+        return false;
+      }
+
+      const passwordMatch = await bcrypt.compare(contraseña, user.contraseña);
+      return passwordMatch ? user : false;
     } catch (error) {
-        console.error('Error al verificar la contraseña:', error);
-        throw error;
+      console.error('Error al verificar contraseña:', error);
+      throw error;
     }
-}
+  };
 
 // Exporta las funciones CRUD
 module.exports = {

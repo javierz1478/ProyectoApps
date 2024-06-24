@@ -13,14 +13,18 @@ const HttpStatus = require("http-status");
 
 //app.use(serve(path.join(__dirname, 'frontend/build')));
 
-const app = new koa();
+const app = new koa();  
 
 const pool = require('./database');
 const port = 3000
 
+app.use(cors({
+    origin: 'http://localhost:3001', // Ajusta esto según el origen de tu cliente
+    credentials: true // Permitir el uso de cookies
+  }));
+
 app.use(BodyParser({ multipart: true, urlencoded: true }))
 app.use(Logger());
-app.use(cors());
 app.use(router.routes())
 
 app.use(async (ctx, next) => {
